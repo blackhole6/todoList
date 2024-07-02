@@ -9,9 +9,7 @@
           'user-message': message.type === 'user',
           'bot-message': message.type === 'bot'
         }"
-      >
-        {{ message.content }}
-      </div>
+      >{{ message.content }}</div>
     </div>
     <div class="chat-input">
       <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="输入消息..." />
@@ -21,6 +19,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: 'Home',
   data() {
@@ -32,18 +31,18 @@ export default {
     };
   },
   methods: {
-    sendMessage() {
+     async sendMessage() {
       if (this.newMessage.trim() === '') return;
 
       // 添加用户发送的消息到消息历史
       this.messages.push({ type: 'user', content: this.newMessage });
-
-      // 模拟机器人回复（实际应用中，这里可以调用后端API返回回复）
-      setTimeout(() => {
-        this.messages.push({ type: 'bot', content: '这是机器人的回复，模拟GPT的对话效果。' });
-        this.scrollToBottom();
-      }, 500);
-
+      try {
+          // 模拟机器人回复（实际应用中，这里可以调用后端API返回回复）
+          const response = await axios.get('/api/saying');
+          this.messages.push({ type: 'bot', content: response.data.context + '--来自:' + response.data.source })
+      } catch (error) {
+        console.error('请求失败', error);
+      }
       // 清空输入框
       this.newMessage = '';
     },
@@ -65,29 +64,33 @@ export default {
 <style scoped>
 .chat-container {
   display: flex;
-  justify-content: center; 
   flex-direction: column;
   height: 100%;
   padding: 20px;
-  background: white;
+  background: w;
   color: white; /* 添加颜色使文字在黑色背景上可见 */
 }
 
 .chat-history {
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 10px;
   padding: 10px;
   background-color: #f0f0f0;
   border-radius: 5px;
-  max-height: 60vh; /* 最大高度，超出部分会出现滚动条 */
+  max-height: 75vh; /* 最大高度，超出部分会出现滚动条 */
 }
 
 .message {
+  display: inline-block;
+  text-align: left;
   margin-bottom: 10px;
   padding: 8px 12px;
+  word-wrap: break-word;
   border-radius: 8px;
-  max-width: 70%;
+  max-width: 50%;
   color: black;
 }
 
@@ -116,7 +119,7 @@ export default {
 
 .chat-input button {
   padding: 8px 16px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;

@@ -33,7 +33,7 @@ html, body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   color: #2c3e50;
-   display: flex;
+  display: flex;
   flex-direction: column;
   height: 100%;
 }
